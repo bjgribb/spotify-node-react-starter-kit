@@ -33,24 +33,24 @@ class App extends Component {
   getNowPlaying () {
     spotifyApi.getMyCurrentPlaybackState()
       .then((response) => {
+        console.log(response)
         this.setState({
           nowPlaying: {
             name: response.item.name,
-            albumArt: response.item.album.images[0].url
+            albumArt: response.item.album.images[0].url,
+            trackId: response.item.id
           }
         })
       })
   }
 
-  getUserPlaylists () {
-    spotifyApi.getUserPlaylists()
+  getAudioFeatures () {
+    let trackId = spotifyApi.getMyCurrentPlaybackState()
+      .then(response => response.item.id)
+    console.log(trackId)
+    spotifyApi.getAudioFeaturesForTrack('3Liyu0tXbecRX5or4IywR5')
       .then((response) => {
-        this.setState({
-          userPlaylist: {
-            playlists: response.items[0].images[0].url
-          }
-        })
-        console.log(response.items[19].images[0].url)
+        console.log(response)
       })
   }
 
@@ -60,20 +60,18 @@ class App extends Component {
         <a href='http://localhost:8888' > Login to Spotify </a>
         <div>
           Now Playing: { this.state.nowPlaying.name }
+          Track Id: { this.state.nowPlaying.trackId }
         </div>
         <div>
           <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }} />
-        </div>
-        <div>
-          <img src={this.state.userPlaylist.playlists} />
         </div>
         { this.state.loggedIn &&
           <button onClick={() => this.getNowPlaying()}>
             Check Now Playing
           </button>
         }
-        <button onClick={() => this.getUserPlaylists()}>
-            Get Playlists
+        <button onClick={() => this.getAudioFeatures()}>
+          Get Features
         </button>
       </div>
     )
